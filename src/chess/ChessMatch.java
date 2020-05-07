@@ -1,6 +1,5 @@
 package chess;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,7 +53,7 @@ public class ChessMatch {
 	public ChessPiece getEnPassantVulnerable() {
 		return enPassantVulnerable;
 	}
-	
+
 	public ChessPiece getPromoted() {
 		return promoted;
 	}
@@ -88,16 +87,16 @@ public class ChessMatch {
 		}
 
 		ChessPiece movedPiece = (ChessPiece) board.piece(target);
-		
-		//#specialmove promoted
+
+		// #specialmove promoted
 		promoted = null;
 		if (movedPiece instanceof Pawn) {
-			if ((movedPiece.getColor() == Color.WHITE && target.getRow() == 0) || (movedPiece.getColor() == Color.BLACK && target.getRow() == 7)) {
-				promoted = (ChessPiece)board.piece(target);
+			if ((movedPiece.getColor() == Color.WHITE && target.getRow() == 0)
+					|| (movedPiece.getColor() == Color.BLACK && target.getRow() == 7)) {
+				promoted = (ChessPiece) board.piece(target);
 				promoted = replacePromotedPiece("Q");
 			}
 		}
-		
 
 		check = (testCheck(opponent(currentPlayer))) ? true : false;
 
@@ -123,27 +122,30 @@ public class ChessMatch {
 			throw new IllegalStateException("There is no piece to be promoted");
 		}
 		if (!type.equals("B") && !type.equals("N") && !type.equals("R") && !type.equals("Q")) {
-			throw new InvalidParameterException("Invalid type for promotion");
+			return promoted;
 		}
-		
+
 		Position pos = promoted.getChessPosition().toPosition();
 		Piece p = board.removePiece(pos);
 		piecesOnTheBoard.remove(p);
-		
+
 		ChessPiece newPiece = newPiece(type, promoted.getColor());
 		board.placePiece(newPiece, pos);
 		piecesOnTheBoard.add(newPiece);
-		
+
 		return newPiece;
 	}
-	
+
 	private ChessPiece newPiece(String type, Color color) {
-		if (type.equals("B")) return new Bishop(board, color);
-		if (type.equals("N")) return new Knight(board, color);
-		if (type.equals("Q")) return new Queen(board, color);
+		if (type.equals("B"))
+			return new Bishop(board, color);
+		if (type.equals("N"))
+			return new Knight(board, color);
+		if (type.equals("Q"))
+			return new Queen(board, color);
 		return new Rook(board, color);
 	}
-	
+
 	private Piece makeMove(Position source, Position target) {
 		ChessPiece p = (ChessPiece) board.removePiece(source);
 		p.increaseMoveCount();
@@ -186,7 +188,6 @@ public class ChessMatch {
 				piecesOnTheBoard.remove(capturedPiece);
 			}
 		}
-
 		return capturedPiece;
 	}
 
@@ -218,11 +219,11 @@ public class ChessMatch {
 			board.placePiece(rook, sourceT);
 			rook.decreaseMoveCount();
 		}
-		
+
 		// #specialmove en passant
 		if (p instanceof Pawn) {
 			if (source.getColumn() != target.getColumn() && capturedPiece == enPassantVulnerable) {
-				ChessPiece pawn = (ChessPiece)board.removePiece(target);
+				ChessPiece pawn = (ChessPiece) board.removePiece(target);
 				Position pawnPosition;
 				if (p.getColor() == Color.WHITE) {
 					pawnPosition = new Position(3, target.getColumn());
